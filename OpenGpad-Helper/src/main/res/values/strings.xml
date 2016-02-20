@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">OpenGamePad Helper</string>
+    <string name="no_connection">No Connection</string>
+    <string name="connected">Connection Succeeded</string>
+    <string name="manage">Manage</string>
+    <string name="add_key">+</string>
+    <string name="close">Close</string>
+    <string name="save">Save</string>
+
 </resources>

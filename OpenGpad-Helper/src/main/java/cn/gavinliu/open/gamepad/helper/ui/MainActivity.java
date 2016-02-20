@@ -1,14 +1,13 @@
 package cn.gavinliu.open.gamepad.helper.ui;
 
-import android.content.Context;
-import android.graphics.PixelFormat;
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.WindowManager;
-import android.widget.Button;
+import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import cn.gavinliu.open.gamepad.helper.R;
+import cn.gavinliu.open.gamepad.helper.service.ConnectionService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,31 +16,36 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        addFloatView();
+        Intent intent = new Intent(this, ConnectionService.class);
+        startService(intent);
     }
 
-    // test
-    private void addFloatView() {
-        WindowManager windowManager = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
-        WindowManager.LayoutParams windowLayoutParams = new WindowManager.LayoutParams();
-        windowLayoutParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
-        windowLayoutParams.format = PixelFormat.RGBA_8888;
-        windowLayoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE; // 不能抢占聚焦点
-        windowLayoutParams.flags = windowLayoutParams.flags | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH;
-        windowLayoutParams.flags = windowLayoutParams.flags | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
-        windowLayoutParams.flags = windowLayoutParams.flags | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
-        windowLayoutParams.flags = windowLayoutParams.flags | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD;
-        windowLayoutParams.alpha = 1.0f;
-        windowLayoutParams.gravity = Gravity.START | Gravity.TOP;
-
-        Button button = new Button(getApplicationContext());
-
-        windowLayoutParams.x = 0;
-        windowLayoutParams.y = 500;
-        windowLayoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
-        windowLayoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
-
-        windowManager.addView(button, windowLayoutParams);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_add:
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); //如果是服务里调用，必须加入new task标识
+                intent.addCategory(Intent.CATEGORY_HOME);
+                startActivity(intent);
+
+                Intent service = new Intent(this, ConnectionService.class);
+                service.setAction(ConnectionService.ACTION_SHOW_PANEL);
+                startService(service);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService(new Intent(this, ConnectionService.class));
+    }
 }
