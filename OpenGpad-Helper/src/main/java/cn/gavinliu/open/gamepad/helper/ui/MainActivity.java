@@ -3,11 +3,16 @@ package cn.gavinliu.open.gamepad.helper.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import cn.gavinliu.open.gamepad.helper.R;
+import cn.gavinliu.open.gamepad.helper.data.FaceButton;
+import cn.gavinliu.open.gamepad.helper.data.Rules;
+import cn.gavinliu.open.gamepad.helper.db.DBManager;
 import cn.gavinliu.open.gamepad.helper.service.ConnectionService;
+import io.realm.Realm;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,6 +23,21 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = new Intent(this, ConnectionService.class);
         startService(intent);
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Realm realm = Realm.getInstance(getApplication());
+                Rules dog = realm.where(Rules.class).findAll().last();
+                if (dog != null) {
+                    for (FaceButton faceButton : dog.getFaceButtons()) {
+                        Log.v("Rules", faceButton.getKey() + " (" + faceButton.getX() + "," + faceButton.getY() + ")");
+                    }
+                }
+                realm.close();
+            }
+        });
+        thread.start();
     }
 
     @Override
