@@ -23,11 +23,9 @@ import java.util.List;
 import cn.gavinliu.open.gamepad.helper.R;
 import cn.gavinliu.open.gamepad.helper.base.BaseService;
 import cn.gavinliu.open.gamepad.helper.data.FaceButton;
-import cn.gavinliu.open.gamepad.helper.data.Rules;
 import cn.gavinliu.open.gamepad.helper.db.DBManager;
 import cn.gavinliu.open.gamepad.helper.ui.MainActivity;
 import cn.gavinliu.open.gamepad.helper.widget.KeyButton;
-import io.realm.Realm;
 
 /**
  * 连接PC的Service
@@ -114,23 +112,17 @@ public class ConnectionService extends BaseService {
                         }
 
                         private void save() {
-                            Realm realm = DBManager.getInstance().getRealm();
-
-                            realm.beginTransaction();
-
-                            Rules rules = realm.createObject(Rules.class);
-
+                            List<FaceButton> faceButtonList = new ArrayList<>();
                             for (int i = 0; i < keyContainer.getChildCount(); i++) {
                                 View view = keyContainer.getChildAt(i);
                                 if (view instanceof KeyButton) {
                                     KeyButton button = (KeyButton) view;
 
                                     FaceButton data = button.getFaceButton();
-                                    rules.getFaceButtons().add(data);
+                                    faceButtonList.add(data);
                                 }
                             }
-
-                            realm.commitTransaction();
+                            DBManager.getInstance().saveRules(faceButtonList);
                         }
                     });
 

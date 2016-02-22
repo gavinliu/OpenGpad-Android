@@ -3,8 +3,12 @@ package cn.gavinliu.open.gamepad.helper.db;
 import android.content.Context;
 
 import java.util.List;
+import java.util.UUID;
 
+import cn.gavinliu.open.gamepad.helper.data.FaceButton;
+import cn.gavinliu.open.gamepad.helper.data.Rules;
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import io.realm.RealmObject;
 
 /**
@@ -14,10 +18,9 @@ public class DBManager {
 
     private static DBManager instance;
 
-    private Realm mRealm;
-
     private DBManager(Context ctx) {
-        mRealm = Realm.getInstance(ctx);
+        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder(ctx).build();
+        Realm.setDefaultConfiguration(realmConfiguration);
     }
 
     public static void createInstance(Context ctx) {
@@ -28,18 +31,33 @@ public class DBManager {
         return instance;
     }
 
-    public Realm getRealm() {
-        return mRealm;
-    }
-
     public void save(RealmObject realmObject) {
-        mRealm.beginTransaction();
-        mRealm.copyToRealm(realmObject);
-        mRealm.commitTransaction();
+        Realm realm = Realm.getDefaultInstance();
+
+        realm.beginTransaction();
+        realm.copyToRealm(realmObject);
+        realm.commitTransaction();
     }
 
     public <T extends RealmObject> List<T> find(Class<T> clazz) {
-        return mRealm.where(clazz).findAll();
+        Realm realm = Realm.getDefaultInstance();
+        
+        return realm.where(clazz).findAll();
+    }
+
+    public void saveRules(List<FaceButton> faceButtons) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+
+        Rules rules = new Rules();
+        rules.setId(UUID.randomUUID().toString());
+        rules = realm.copyToRealm(rules);
+
+        for (FaceButton faceButton : faceButtons) {
+            rules.getFaceButtons().add(faceButton);
+        }
+
+        realm.commitTransaction();
     }
 
 }

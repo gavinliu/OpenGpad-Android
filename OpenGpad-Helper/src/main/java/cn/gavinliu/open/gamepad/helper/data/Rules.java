@@ -9,14 +9,15 @@ import io.realm.annotations.PrimaryKey;
  */
 public class Rules extends RealmObject {
 
-    private int id;
+    @PrimaryKey
+    private String id;
     private RealmList<FaceButton> faceButtons;
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
