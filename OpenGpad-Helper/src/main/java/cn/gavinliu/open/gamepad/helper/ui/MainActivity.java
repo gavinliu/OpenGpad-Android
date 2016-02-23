@@ -8,7 +8,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -45,6 +44,14 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         stopService(new Intent(this, ConnectionService.class));
         realm.close();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Intent intent = new Intent(this, ConnectionService.class);
+        intent.setAction(ConnectionService.ACTION_HIDE_PANEL);
+        startService(intent);
     }
 
     @Override
