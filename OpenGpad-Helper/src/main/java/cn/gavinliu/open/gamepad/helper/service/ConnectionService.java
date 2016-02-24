@@ -5,15 +5,26 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+
 import cn.gavinliu.open.gamepad.helper.R;
 import cn.gavinliu.open.gamepad.helper.base.BaseService;
+import cn.gavinliu.open.gamepad.helper.data.Rules;
+import cn.gavinliu.open.gamepad.helper.db.RealmJsonAdapter;
 import cn.gavinliu.open.gamepad.helper.ui.MainActivity;
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 /**
  * 连接PC的Service
@@ -25,10 +36,17 @@ public class ConnectionService extends BaseService {
     public static final String ACTION_SHOW_PANEL = "ACTION_SHOW_PANEL";
     public static final String ACTION_HIDE_PANEL = "ACTION_HIDE_PANEL";
 
+    private static final String HEART_BEAT_PACKET = "HEART_BEAT_PACKET";
+
+    private static final String ACTION_GET_RULES = "ACTION_GET_RULES";
+    private static final String ACTION_HEART_BEAT = "ACTION_HEART_BEAT";
+
     private WindowManager mWM;
 
     private View mManagerPanel;
     private Button mManagerButton;
+
+    private ConnectionThread thread;
 
     @Override
     public void onCreate() {
@@ -71,6 +89,11 @@ public class ConnectionService extends BaseService {
         } else if (ACTION_HIDE_PANEL.equals(action)) {
             removeFloatView();
         } else {
+            if (thread == null) {
+                thread = new ConnectionThread();
+                thread.start();
+            }
+
             notify(getString(R.string.no_connection));
         }
 
@@ -97,6 +120,7 @@ public class ConnectionService extends BaseService {
         stopForegroundCompat(R.string.app_name);
 
         removeFloatView();
+        thread.close();
     }
 
     private void removeFloatView() {
@@ -125,6 +149,73 @@ public class ConnectionService extends BaseService {
         windowLayoutParams.gravity = Gravity.START | Gravity.TOP;
 
         return windowLayoutParams;
+    }
+
+    private class ConnectionThread extends Thread {
+
+        private final String TAG = "ConnectionThread";
+
+        private ServerSocket server;
+
+        private boolean loop;
+
+
+        public ConnectionThread() {
+            loop = true;
+        }
+
+        @Override
+        public void run() {
+            try {
+                server = new ServerSocket(9000);
+                while (loop) {
+                    Socket socket = server.accept();
+                    DataInputStream inputStream = new DataInputStream(socket.getInputStream());
+                    DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
+
+                    byte[] bytes = new byte[1024];
+                    int len;
+                    StringBuilder builder = new StringBuilder();
+                    if ((len = inputStream.read(bytes)) != -1) {
+                        builder.append(new String(bytes, 0, len, "UTF-8"));
+                    }
+
+                    String action = builder.toString();
+                    Log.d(TAG, action);
+
+                    if (ACTION_GET_RULES.equals(action)) {
+                        Realm realm = Realm.getDefaultInstance();
+                        RealmResults<Rules> ruleList = realm.where(Rules.class).findAll();
+                        String json = RealmJsonAdapter.rulesToJsonString(ruleList);
+                        realm.close();
+
+                        outputStream.writeBytes(json);
+                    } else if (ACTION_HEART_BEAT.equals(action)) {
+                        outputStream.writeBytes(HEART_BEAT_PACKET);
+                    } else {
+                        outputStream.writeBytes(HEART_BEAT_PACKET);
+                    }
+
+                    outputStream.flush();
+                    socket.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void close() {
+            loop = false;
+
+            if (server != null && !server.isClosed()) {
+                try {
+                    server.close();
+                    server = null;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @Override

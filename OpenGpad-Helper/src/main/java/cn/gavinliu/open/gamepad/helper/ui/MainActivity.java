@@ -92,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
             TextView id = (TextView) convertView.findViewById(R.id.rules_id);
             id.setText(realmResults.get(position).getId());
 
-
             String str = "";
             for (FaceButton faceButton : realmResults.get(position).getFaceButtons()) {
                 str += "\n" + faceButton.getKey() + " (" + faceButton.getX() + "," + faceButton.getY() + ")";
