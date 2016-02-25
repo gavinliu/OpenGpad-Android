@@ -167,7 +167,7 @@ public class ConnectionService extends BaseService {
         @Override
         public void run() {
             try {
-                server = new ServerSocket(9000);
+                server = new ServerSocket(9001);
                 while (loop) {
                     Socket socket = server.accept();
                     DataInputStream inputStream = new DataInputStream(socket.getInputStream());
@@ -189,7 +189,24 @@ public class ConnectionService extends BaseService {
                         String json = RealmJsonAdapter.rulesToJsonString(ruleList);
                         realm.close();
 
-                        outputStream.writeBytes(json);
+                        byte[] jsonBytes = json.getBytes();
+
+
+                        for (int i = 0; i < jsonBytes.length; ) {
+                            int length;
+
+                            if ((jsonBytes.length - i) >= 1024) {
+                                length = 1024;
+                            } else {
+                                length = jsonBytes.length - i;
+                            }
+
+                            outputStream.write(jsonBytes, i, length);
+                            i = i + length;
+                        }
+
+                        Log.d(TAG, json);
+
                     } else if (ACTION_HEART_BEAT.equals(action)) {
                         outputStream.writeBytes(HEART_BEAT_PACKET);
                     } else {
