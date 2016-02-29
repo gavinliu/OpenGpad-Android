@@ -86,6 +86,8 @@ public class ConnectionService extends BaseService {
             layoutParams.width = 48 * 3;
             layoutParams.height = 48 * 3;
             mWM.addView(mManagerButton, layoutParams);
+
+
         } else if (ACTION_HIDE_PANEL.equals(action)) {
             removeFloatView();
         } else {

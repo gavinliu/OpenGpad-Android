@@ -1,8 +1,14 @@
 package cn.gavinliu.open.gamepad.helper.ui;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,6 +43,15 @@ public class MainActivity extends AppCompatActivity {
         RealmResults<Rules> ruleList = realm.where(Rules.class).findAll();
         Adapter adapter = new Adapter(this, ruleList, true);
         listView.setAdapter(adapter);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SYSTEM_ALERT_WINDOW) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (!Settings.canDrawOverlays(MainActivity.this)) {
+                    Intent intent1 = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
+                    startActivityForResult(intent1, 10);
+                }
+            }
+        }
     }
 
     @Override

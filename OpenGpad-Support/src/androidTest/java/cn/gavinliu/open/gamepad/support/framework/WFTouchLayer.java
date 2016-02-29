@@ -7,8 +7,8 @@ import android.support.test.uiautomator.UiDevice;
 import android.util.Log;
 import android.view.InputDevice;
 import android.view.MotionEvent;
-import android.view.MotionEvent.PointerProperties;
 import android.view.MotionEvent.PointerCoords;
+import android.view.MotionEvent.PointerProperties;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -235,84 +235,6 @@ public class WFTouchLayer {
         event = MotionEvent.obtain(mDownTime, SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 1,
                 mProperties, mPointerCoords, 0, 0, 1, 1, 0, 0, InputDevice.SOURCE_TOUCHSCREEN, 0);
         ret &= mUiAutomation.injectInputEvent(event, true);
-
-        return ret;
-    }
-
-
-    private boolean performMultiPointerGesture(PointerCoords[]... touches) {
-        boolean ret = true;
-        if (touches.length < 2) {
-            throw new IllegalArgumentException("Must provide coordinates for at least 2 pointers");
-        }
-
-        // Get the pointer with the max steps to inject.
-        int maxSteps = 0;
-        for (int x = 0; x < touches.length; x++)
-            maxSteps = (maxSteps < touches[x].length) ? touches[x].length : maxSteps;
-
-        // specify the properties for each pointer as finger touch
-        PointerProperties[] properties = new PointerProperties[touches.length];
-        PointerCoords[] pointerCoords = new PointerCoords[touches.length];
-        for (int x = 0; x < touches.length; x++) {
-            MotionEvent.PointerProperties prop = new MotionEvent.PointerProperties();
-            prop.id = x;
-            prop.toolType = MotionEvent.TOOL_TYPE_FINGER;
-            properties[x] = prop;
-
-            // for each pointer set the first coordinates for touch down
-            pointerCoords[x] = touches[x][0];
-        }
-
-        // Touch down all pointers
-        long downTime = SystemClock.uptimeMillis();
-        MotionEvent event;
-        event = MotionEvent.obtain(downTime, SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 1,
-                properties, pointerCoords, 0, 0, 1, 1, 0, 0, InputDevice.SOURCE_TOUCHSCREEN, 0);
-        ret &= mUiAutomation.injectInputEvent(event, true);
-
-        for (int x = 1; x < touches.length; x++) {
-            event = MotionEvent.obtain(downTime, SystemClock.uptimeMillis(),
-                    getPointerAction(MotionEvent.ACTION_POINTER_DOWN, x), x + 1, properties,
-                    pointerCoords, 0, 0, 1, 1, 0, 0, InputDevice.SOURCE_TOUCHSCREEN, 0);
-            ret &= mUiAutomation.injectInputEvent(event, true);
-        }
-
-        // Move all pointers
-        for (int i = 1; i < maxSteps - 1; i++) {
-            // for each pointer
-            for (int x = 0; x < touches.length; x++) {
-                // check if it has coordinates to move
-                if (touches[x].length > i)
-                    pointerCoords[x] = touches[x][i];
-                else
-                    pointerCoords[x] = touches[x][touches[x].length - 1];
-            }
-
-            event = MotionEvent.obtain(downTime, SystemClock.uptimeMillis(),
-                    MotionEvent.ACTION_MOVE, touches.length, properties, pointerCoords, 0, 0, 1, 1,
-                    0, 0, InputDevice.SOURCE_TOUCHSCREEN, 0);
-
-            ret &= mUiAutomation.injectInputEvent(event, true);
-            SystemClock.sleep(5);
-        }
-
-//        // For each pointer get the last coordinates
-//        for (int x = 0; x < touches.length; x++)
-//            pointerCoords[x] = touches[x][touches[x].length - 1];
-//
-//        // touch up
-//        for (int x = 1; x < touches.length; x++) {
-//            event = MotionEvent.obtain(downTime, SystemClock.uptimeMillis(),
-//                    getPointerAction(MotionEvent.ACTION_POINTER_UP, x), x + 1, properties,
-//                    pointerCoords, 0, 0, 1, 1, 0, 0, InputDevice.SOURCE_TOUCHSCREEN, 0);
-//            ret &= mUiAutomation.injectInputEvent(event, true);
-//        }
-//
-//        // first to touch down is last up
-//        event = MotionEvent.obtain(downTime, SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 1,
-//                properties, pointerCoords, 0, 0, 1, 1, 0, 0, InputDevice.SOURCE_TOUCHSCREEN, 0);
-//        ret &= mUiAutomation.injectInputEvent(event, true);
 
         return ret;
     }

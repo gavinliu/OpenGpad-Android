@@ -75,6 +75,12 @@ public class SupportKit {
             String request = builder.toString();
             Log.d(TAG, "request: " + request);
 
+            if ("CLOSE".equals(request)) {
+                socket.close();
+                mIsLoop = false;
+                return;
+            }
+
             TouchEvent event = JSON.parseObject(request, TouchEvent.class);
 
             eventList.remove(event);
