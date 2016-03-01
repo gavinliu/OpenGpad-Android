@@ -83,8 +83,8 @@ public class ConnectionService extends BaseService {
             WindowManager.LayoutParams layoutParams = createWindowLayoutParams();
             layoutParams.x = 0;
             layoutParams.y = 0;
-            layoutParams.width = 48 * 3;
-            layoutParams.height = 48 * 3;
+            layoutParams.width = getResources().getDimensionPixelSize(R.dimen.btn_width);
+            layoutParams.height = getResources().getDimensionPixelSize(R.dimen.btn_height);
             mWM.addView(mManagerButton, layoutParams);
 
 

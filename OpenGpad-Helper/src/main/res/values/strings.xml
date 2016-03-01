@@ -6,5 +6,8 @@
     <string name="add_key">+</string>
     <string name="close">Close</string>
     <string name="save">Save</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+    <string name="save_success">Save Success</string>
 
 </resources>

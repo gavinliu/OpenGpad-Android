@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +26,7 @@ import cn.gavinliu.open.gamepad.helper.db.DBManager;
  */
 public class ManagerPanelLayout extends FrameLayout implements View.OnClickListener {
 
-    private View titleLayout;
+    private View titleContainer;
     private Button btn_close;
     private Button btn_add;
     private Button btn_save;
@@ -61,6 +62,7 @@ public class ManagerPanelLayout extends FrameLayout implements View.OnClickListe
         super.onFinishInflate();
         keys = new ArrayList<>();
 
+        titleContainer = findViewById(R.id.title_container);
         btn_close = (Button) findViewById(R.id.close);
         btn_add = (Button) findViewById(R.id.add_key);
         btn_save = (Button) findViewById(R.id.save);
@@ -70,6 +72,7 @@ public class ManagerPanelLayout extends FrameLayout implements View.OnClickListe
         grid2 = (GridView) findViewById(R.id.grid2);
         grid3 = (GridView) findViewById(R.id.grid3);
         btn_confirm = (Button) findViewById(R.id.confirm);
+        btn_cancel = (Button) findViewById(R.id.cancel);
 
         keyContainer = (FrameLayout) findViewById(R.id.key_container);
 
@@ -86,6 +89,7 @@ public class ManagerPanelLayout extends FrameLayout implements View.OnClickListe
             @Override
             public void onClick(View v) {
                 keyboardContainer.setVisibility(View.VISIBLE);
+                titleContainer.setVisibility(GONE);
             }
         });
         btn_save.setOnClickListener(new View.OnClickListener() {
@@ -93,6 +97,7 @@ public class ManagerPanelLayout extends FrameLayout implements View.OnClickListe
             public void onClick(View v) {
                 if (keyContainer.getChildCount() > 0) {
                     save();
+                    Toast.makeText(getContext(), R.string.save_success, Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -115,6 +120,14 @@ public class ManagerPanelLayout extends FrameLayout implements View.OnClickListe
         setupKeyboardView(key2, grid2);
         setupKeyboardView(key3, grid3);
 
+        btn_cancel.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                keyboardContainer.setVisibility(View.GONE);
+                titleContainer.setVisibility(VISIBLE);
+            }
+        });
+
         btn_confirm.setOnClickListener(new View.OnClickListener() {
 
             List<String> tempKeys;
@@ -129,6 +142,7 @@ public class ManagerPanelLayout extends FrameLayout implements View.OnClickListe
                 checkKeyCount();
 
                 keyboardContainer.setVisibility(View.GONE);
+                titleContainer.setVisibility(VISIBLE);
             }
 
             private void getSelectButton(GridView gridView, String[] ss) {
@@ -141,8 +155,10 @@ public class ManagerPanelLayout extends FrameLayout implements View.OnClickListe
                         keys.add(str);
 
                         KeyButton button = new KeyButton(getContext());
+                        button.setBackgroundResource(R.drawable.key_bg);
                         button.setText(str);
-                        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(48 * 3, 48 * 3);
+                        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.key_width),
+                                getResources().getDimensionPixelSize(R.dimen.key_height));
                         params.gravity = Gravity.CENTER;
                         keyContainer.addView(button, params);
                     }

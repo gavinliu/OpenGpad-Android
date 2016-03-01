@@ -104,12 +104,15 @@ public class MainActivity extends AppCompatActivity {
                 convertView = getLayoutInflater().inflate(R.layout.rules_item, null);
             }
 
-            TextView id = (TextView) convertView.findViewById(R.id.rules_id);
-            id.setText(realmResults.get(position).getId());
-
             String str = "";
+            int i = 0;
             for (FaceButton faceButton : realmResults.get(position).getFaceButtons()) {
-                str += "\n" + faceButton.getKey() + " (" + faceButton.getX() + "," + faceButton.getY() + ")";
+                str += faceButton.getKey() + " (" + faceButton.getX() + "," + faceButton.getY() + ")";
+
+                if (i < realmResults.get(position).getFaceButtons().size() - 1) {
+                    str += " | ";
+                }
+                i++;
             }
 
             TextView rules = (TextView) convertView.findViewById(R.id.rules);
