@@ -23,6 +23,7 @@ import cn.gavinliu.open.gamepad.helper.base.BaseService;
 import cn.gavinliu.open.gamepad.helper.data.Rules;
 import cn.gavinliu.open.gamepad.helper.db.RealmJsonAdapter;
 import cn.gavinliu.open.gamepad.helper.ui.MainActivity;
+import cn.gavinliu.open.gamepad.helper.utils.ScreenUtils;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
@@ -82,7 +83,7 @@ public class ConnectionService extends BaseService {
 
             WindowManager.LayoutParams layoutParams = createWindowLayoutParams();
             layoutParams.x = 0;
-            layoutParams.y = 0;
+            layoutParams.y = ScreenUtils.getInstance().getStatusBarHeight();
             layoutParams.width = getResources().getDimensionPixelSize(R.dimen.btn_width);
             layoutParams.height = getResources().getDimensionPixelSize(R.dimen.btn_height);
             mWM.addView(mManagerButton, layoutParams);

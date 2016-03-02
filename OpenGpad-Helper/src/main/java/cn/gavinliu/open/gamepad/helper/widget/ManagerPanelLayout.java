@@ -20,6 +20,7 @@ import java.util.List;
 import cn.gavinliu.open.gamepad.helper.R;
 import cn.gavinliu.open.gamepad.helper.data.FaceButton;
 import cn.gavinliu.open.gamepad.helper.db.DBManager;
+import cn.gavinliu.open.gamepad.helper.utils.ScreenUtils;
 
 /**
  * Created by Gavin on 16-2-23.
@@ -76,6 +77,8 @@ public class ManagerPanelLayout extends FrameLayout implements View.OnClickListe
 
         keyContainer = (FrameLayout) findViewById(R.id.key_container);
 
+
+        titleContainer.setPadding(0, ScreenUtils.getInstance().getStatusBarHeight(), 0, 0);
 
         btn_close.setOnClickListener(new View.OnClickListener() {
             @Override
