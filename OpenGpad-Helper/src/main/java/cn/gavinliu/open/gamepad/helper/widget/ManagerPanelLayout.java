@@ -160,6 +160,7 @@ public class ManagerPanelLayout extends FrameLayout implements View.OnClickListe
                         KeyButton button = new KeyButton(getContext());
                         button.setBackgroundResource(R.drawable.key_bg);
                         button.setText(str);
+                        button.setPadding(0, 0, 0, 0);
                         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.key_width),
                                 getResources().getDimensionPixelSize(R.dimen.key_height));
                         params.gravity = Gravity.CENTER;

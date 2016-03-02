@@ -62,6 +62,7 @@ public class ConnectionService extends BaseService {
         if (ACTION_SHOW_PANEL.equals(action) && mManagerButton == null) {
             mManagerButton = new Button(getApplicationContext());
             mManagerButton.setText(getString(R.string.manage));
+            mManagerButton.setPadding(0, 0, 0, 0);
             mManagerButton.setOnClickListener(new View.OnClickListener() {
 
                 @Override
@@ -110,7 +111,7 @@ public class ConnectionService extends BaseService {
                 .setContentTitle(getString(R.string.app_name))
                 .setTicker(text)
                 .setContentText(text)
-                .setSmallIcon(R.drawable.ic_launcher)
+                .setSmallIcon(R.drawable.ic_gamepad)
                 .setWhen(System.currentTimeMillis())
                 .build();
 

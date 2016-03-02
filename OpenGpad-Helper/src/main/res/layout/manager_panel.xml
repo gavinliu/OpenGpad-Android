@@ -16,6 +16,7 @@
 
         <Button
             android:id="@+id/close"
+            android:padding="0dp"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:text="@string/close" />
@@ -24,6 +25,7 @@
             android:id="@+id/add_key"
             android:layout_width="48dp"
             android:layout_height="48dp"
+            android:padding="0dp"
             android:layout_gravity="center_horizontal"
             android:text="@string/add_key" />
 
@@ -31,6 +33,7 @@
             android:id="@+id/save"
             android:layout_width="48dp"
             android:layout_height="48dp"
+            android:padding="0dp"
             android:layout_gravity="end"
             android:text="@string/save" />
 
